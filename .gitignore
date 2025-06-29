@@ -1,0 +1,11 @@
+# node_modules from all sub-projects
+**/node_modules
+
+# build folders
+**/dist
+**/build
+
+# misc
+.env
+.DS_Store
+*.log

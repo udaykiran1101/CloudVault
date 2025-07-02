@@ -1,6 +1,9 @@
 import { useEffect, useState } from 'react';
 import { supabase } from '../supabase';
 import { useNavigate } from 'react-router-dom';
+import UploadForm from '../components/UploadForm';
+import FileList from '../components/FileList';
+
 
 export default function Dashboard() {
   const [user, setUser] = useState(null); // Stores the logged-in user
@@ -30,25 +33,27 @@ export default function Dashboard() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 flex flex-col items-center justify-center">
-      <div className="bg-white shadow-lg rounded p-8 w-full max-w-xl text-center">
-        <h1 className="text-3xl font-bold mb-4">Welcome to CloudVault 🚀</h1>
+    <div className="min-vh-100 d-flex flex-column align-items-center justify-content-center bg-light">
+      <div className="bg-white shadow rounded p-4 w-100" style={{ maxWidth: '32rem' }}>
+        <h1 className="display-5 fw-bold mb-4">Welcome to CloudVault 🚀</h1>
 
         {user ? (
           <>
-            <p className="mb-6 text-gray-700">
+            <p className="mb-4 text-secondary">
               Logged in as: <strong>{user.email}</strong>
             </p>
-
+          
+            <UploadForm user={user} />
+            <FileList user={user} />
             <button
               onClick={handleLogout}
-              className="bg-red-600 hover:bg-red-700 text-white py-2 px-6 rounded"
+              className="btn btn-danger px-4 py-2"
             >
               Logout
             </button>
           </>
         ) : (
-          <p className="text-gray-500">Loading user...</p>
+          <p className="text-muted">Loading user...</p>
         )}
       </div>
     </div>

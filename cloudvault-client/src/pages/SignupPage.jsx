@@ -30,23 +30,23 @@ export default function SignupPage() {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-100">
-      <div className="bg-white shadow-md rounded px-8 pt-6 pb-8 w-full max-w-md">
-        <h2 className="text-2xl font-bold mb-4 text-center">Sign Up</h2>
+    <div className="d-flex align-items-center justify-content-center min-vh-100 bg-light">
+      <div className="bg-white shadow rounded p-4 w-100" style={{ maxWidth: '28rem' }}>
+        <h2 className="h3 fw-bold mb-4 text-center">Sign Up</h2>
         <input
-          className="mb-4 px-3 py-2 border border-gray-300 rounded w-full"
+          className="form-control mb-3"
           type="text"
           placeholder="Full Name"
           onChange={(e) => setFullName(e.target.value)}
         />
         <input
-          className="mb-4 px-3 py-2 border border-gray-300 rounded w-full"
+          className="form-control mb-3"
           type="email"
           placeholder="Email"
           onChange={(e) => setEmail(e.target.value)}
         />
         <input
-          className="mb-6 px-3 py-2 border border-gray-300 rounded w-full"
+          className="form-control mb-4"
           type="password"
           placeholder="Password"
           onChange={(e) => setPassword(e.target.value)}
@@ -54,7 +54,7 @@ export default function SignupPage() {
         <button
           onClick={handleSignup}
           disabled={loading}
-          className="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded w-full"
+          className="btn btn-success w-100"
         >
           {loading ? 'Signing up...' : 'Sign Up'}
         </button>

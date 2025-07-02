@@ -1,8 +1,8 @@
 // src/components/FileList.jsx
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState , forwardRef,useImperativeHandle} from 'react';
 import { supabase } from '../supabase';
 
-function FileList({ user }) {
+function FileList({ user,project,ref }) {
   const [files, setFiles] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -10,8 +10,8 @@ function FileList({ user }) {
     setLoading(true);
 
     const { data, error } = await supabase.storage
-      .from('user-files') // Change this if your bucket name is different
-      .list(user.id + '/', { limit: 100,
+      .from('project-files') // Change this if your bucket name is different
+      .list(`projects/${project.id}/`,{ limit: 100,
         offset: 0,
         sortBy: { column: 'name', order: 'asc' },
       });
@@ -24,11 +24,13 @@ function FileList({ user }) {
 
     setLoading(false);
   };
-
+  useImperativeHandle(ref, () => ({
+    refresh: fetchFiles,
+  }));
   const downloadFile = async (fileName) => {
     const { data, error } = await supabase.storage
-      .from('user-files')
-      .createSignedUrl(`${user.id}/${fileName}`, 60); // 60 seconds expiry
+      .from('project-files')
+      .createSignedUrl(`projects/${project.id}/${fileName}`, 60);
 
     if (error) {
       alert('Error generating download link.');
@@ -39,8 +41,8 @@ function FileList({ user }) {
 
   const deleteFile = async (fileName) => {
     const { error } = await supabase.storage
-      .from('user-files')
-      .remove([`${user.id}/${fileName}`]);
+      .from('project-files')
+      .remove([`projects/${project.id}/${fileName}`]);
 
     if (error) {
       alert('Error deleting file: ' + error.message);
@@ -50,8 +52,8 @@ function FileList({ user }) {
     }
   };
   useEffect(() => {
-    if (user) fetchFiles();
-  }, [user]);
+    if (user && project) fetchFiles();
+  }, [user,project]);
 
   if (loading) return <p>Loading files...</p>;
 

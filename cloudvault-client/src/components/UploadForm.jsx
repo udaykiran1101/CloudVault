@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { supabase } from '../supabase';
 import { useNavigate } from 'react-router-dom';
 
-function UploadForm({ user }) {
+function UploadForm({ user,project ,onUploadComplete }) {
   const [file, setFile] = useState(null);
   const [status, setStatus] = useState('');
   const navigate = useNavigate();
@@ -16,20 +16,21 @@ function UploadForm({ user }) {
       return;
     }
 
-    const filePath = `${user.id}/${file.name}`;
+   // const filePath = `${user.id}/${file.name}`;
 
+    
     const { data, error } = await supabase.storage
-      .from('user-files')
-      .upload(filePath, file, {
-        cacheControl: '3600',
-        upsert: false,
-      });
-
+  .from('project-files') // change this if you're still using 'user-files'
+  .upload(`projects/${project.id}/${file.name}`, file, {
+    cacheControl: '3600',
+    upsert: true,
+  });
     if (error) {
       console.error(error);
       setStatus('❌ Upload failed: ' + error.message);
     } else {
       setStatus('✅ File uploaded successfully!');
+      onUploadComplete?.(); // Call the callback if provided
     }
   };
 

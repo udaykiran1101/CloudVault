@@ -1,62 +1,49 @@
-import { useEffect, useState } from 'react';
+import React, { useState, useEffect ,useRef} from 'react';
 import { supabase } from '../supabase';
-import { useNavigate } from 'react-router-dom';
 import UploadForm from '../components/UploadForm';
 import FileList from '../components/FileList';
+import CreateProjectForm from '../components/CreateProjectForm';
+import ProjectSelector from '../components/ProjectSelector';
 
+function Dashboard() {
+  const [user, setUser] = useState(null);
+  const [activeProject, setActiveProject] = useState(null);
+  const fileListRef = useRef();
 
-export default function Dashboard() {
-  const [user, setUser] = useState(null); // Stores the logged-in user
-  const navigate = useNavigate();
-
-  // 🔁 Run this once when the component mounts
   useEffect(() => {
     const getUser = async () => {
       const {
         data: { user },
-        error,
       } = await supabase.auth.getUser();
-
-      if (error || !user) {
-        navigate('/login'); // If no user is found, redirect to login
-      } else {
-        setUser(user); // Otherwise, store user data
-      }
+      setUser(user);
     };
-
     getUser();
-  }, [navigate]); // ⏱️ Dependency array → run only once on mount
+  }, []);
 
-  const handleLogout = async () => {
-    await supabase.auth.signOut(); // Supabase logout
-    navigate('/login'); // Redirect to login
-  };
+  if (!user) return <p>Loading user...</p>;
 
   return (
-    <div className="min-vh-100 d-flex flex-column align-items-center justify-content-center bg-light">
-      <div className="bg-white shadow rounded p-4 w-100" style={{ maxWidth: '32rem' }}>
-        <h1 className="display-5 fw-bold mb-4">Welcome to CloudVault 🚀</h1>
+    <div className="container mt-4">
+      <h2>Welcome, {user.email}</h2>
 
-        {user ? (
-          <>
-            <p className="mb-4 text-secondary">
-              Logged in as: <strong>{user.email}</strong>
-            </p>
-          
-            <UploadForm user={user} />
-            <FileList user={user} />
-            <button
-              onClick={handleLogout}
-              className="btn btn-danger px-4 py-2"
-            >
-              Logout
-            </button>
-          </>
-        ) : (
-          <p className="text-muted">Loading user...</p>
-        )}
-      </div>
+      <CreateProjectForm
+        onProjectCreated={(newProj) => setActiveProject(newProj)}
+      />
+
+      <ProjectSelector onProjectSelect={setActiveProject} />
+
+      {activeProject && (
+        <>
+          <h5 className="mt-4 text-success">
+            Active Project: {activeProject.name}
+          </h5>
+          <UploadForm user={user} project={activeProject} onUploadComplete={() => fileListRef.current?.refresh()} />
+          <FileList user={user} project={activeProject} ref={fileListRef}/>
+        </>
+      )}
     </div>
   );
 }
+
+export default Dashboard;
 
